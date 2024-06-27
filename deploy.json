@@ -1,8 +1,77 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
-    "variables": {},
-    "resources": [],
-    "outputs": {}
-}
+    "parameters": {
+      "appName": {
+        "type": "string",
+        "defaultValue": "Contact-Database-Application"
+      },
+      "resourceGroup": {
+        "type": "string",
+        "defaultValue": "GitHub-Copilot-Challenges"
+      },
+      "location": {
+        "type": "string",
+        "defaultValue": "East US"
+      },
+      "appServicePlan": {
+        "type": "string",
+        "defaultValue": "Contact-Database-App-Service-Plan"
+      }
+    },
+    "variables": {
+      "appServicePlanName": "[parameters('appServicePlan')]",
+      "webAppName": "[parameters('appName')]"
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Web/serverfarms",
+        "apiVersion": "2020-06-01",
+        "name": "[variables('appServicePlanName')]",
+        "location": "[parameters('location')]",
+        "sku": {
+          "name": "B1",
+          "tier": "Basic",
+          "size": "B1",
+          "family": "B",
+          "capacity": 1
+        },
+        "properties": {
+          "name": "[variables('appServicePlanName')]",
+          "computeMode": "Shared"
+        }
+      },
+      {
+        "type": "Microsoft.Web/sites",
+        "apiVersion": "2020-06-01",
+        "name": "[variables('webAppName')]",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+        ],
+        "properties": {
+          "name": "[variables('webAppName')]",
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+          "httpsOnly": true,
+          "siteConfig": {
+            "appSettings": [
+              {
+                "name": "WEBSITE_AUTH_ENABLED",
+                "value": "true"
+              },
+              {
+                "name": "WEBSITE_AUTH_UNAUTHENTICATED_ACTION",
+                "value": "RedirectToLoginPage"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": {
+      "webAppUrl": {
+        "type": "string",
+        "value": "[concat('https://', variables('webAppName'), '.azurewebsites.net')]"
+      }
+    }
+  }
