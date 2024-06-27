@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appName": {
+            "value": "Contact-Database-Application"
+        },
+        "resourceGroup": {
+            "value": "GitHub-Copilot-Challenges"
+        },
+        "location": {
+            "value": "East US"
+        },
+        "appServicePlan": {
+            "value": "Contact-Database-App-Service-Plan"
+        }
+    }
+}
